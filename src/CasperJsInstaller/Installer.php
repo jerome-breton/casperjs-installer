@@ -25,8 +25,9 @@ class Installer
     /**
      * Operating system dependend installation of CasperJS
      */
-    public static function installCasperJS(Event $event)
+    public static function install(Event $event)
     {
+        //Install PhantomJs before CasperJs
         \PhantomInstaller\Installer::installPhantomJS($event);
 
         $composer = $event->getComposer();
@@ -41,7 +42,6 @@ class Installer
         $targetDir = $composer->getConfig()->get('vendor-dir') . self::CASPERJS_TARGETDIR;
 
         // Create Composer In-Memory Package
-
         $versionParser = new VersionParser();
         $normVersion = $versionParser->normalize($version);
 
@@ -137,7 +137,7 @@ class Installer
     }
 
     /**
-     * Returns the URL of the PhantomJS distribution for the installing OS.
+     * Returns the URL of the CasperJs distribution
      *
      * @param string $version
      * @return string Download URL
@@ -165,23 +165,5 @@ class Installer
         } else {
             return 'unknown';
         }
-    }
-
-    /**
-     * Returns the Bit-Size.
-     *
-     * @return string BitSize, e.g. 32, 64.
-     */
-    public static function getBitSize()
-    {
-        if (PHP_INT_SIZE === 4) {
-            return 32;
-        }
-
-        if (PHP_INT_SIZE === 8) {
-            return 64;
-        }
-
-        return PHP_INT_SIZE; // 16-bit?
     }
 }

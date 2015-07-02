@@ -1,32 +1,31 @@
-phantomjs-installer
+casperjs-installer
 ===================
 
-[![Latest Stable Version](https://poser.pugx.org/jakoch/phantomjs-installer/version.png)](https://packagist.org/packages/jakoch/phantomjs-installer)
-[![Total Downloads](https://poser.pugx.org/jakoch/phantomjs-installer/d/total.png)](https://packagist.org/packages/jakoch/phantomjs-installer)
-[![Build Status](https://travis-ci.org/jakoch/phantomjs-installer.png)](https://travis-ci.org/jakoch/phantomjs-installer)
-[![License](https://poser.pugx.org/jakoch/phantomjs-installer/license.png)](https://packagist.org/packages/jakoch/phantomjs-installer)
+[![Latest Stable Version](https://poser.pugx.org/jerome-breton/casperjs-installer/version.png)](https://packagist.org/packages/jerome-breton/casperjs-installer)
+[![Total Downloads](https://poser.pugx.org/jerome-breton/casperjs-installer/d/total.png)](https://packagist.org/packages/jerome-breton/casperjs-installer)
+[![Build Status](https://travis-ci.org/jerome-breton/casperjs-installer.png)](https://travis-ci.org/jerome-breton/casperjs-installer)
+[![License](https://poser.pugx.org/jerome-breton/casperjs-installer/license.png)](https://packagist.org/packages/jerome-breton/casperjs-installer)
 
-A Composer package which installs the PhantomJS binary (Linux, Windows, Mac) into `/bin` of your project.
+A Composer package which installs the CasperJS and PhantomJS binary (Linux, Windows, Mac) into the bin path of your 
+project.
 
 ## Installation
 
-To install PhantomJS as a local, per-project dependency to your project, simply add a dependency on `jakoch/phantomjs-installer` to your project's `composer.json` file.
+To install CasperJS and PhantomJS as a local, per-project dependency to your project, simply add a dependency on 
+`jerome-breton/casperjs-installer` to your project's `composer.json` file.
 
 
 ```json
 {
     "require": {
-        "jakoch/phantomjs-installer": "2.0.0"
-    },
-    "config": {
-        "bin-dir": "bin"
+        "jerome-breton/casperjs-installer": "1.0.3"
     },
     "scripts": {
         "post-install-cmd": [
-            "PhantomInstaller\\Installer::installPhantomJS"
+            "CasperJsInstaller\\Installer::install"
         ],
         "post-update-cmd": [
-            "PhantomInstaller\\Installer::installPhantomJS"
+            "CasperJsInstaller\\Installer::install"
         ]
     }
 }
@@ -34,32 +33,40 @@ To install PhantomJS as a local, per-project dependency to your project, simply 
 
 For a development dependency, change `require` to `require-dev`.
 
-The version number of the package specifies the PhantomJS version!
-If you specify "dev-master" the version "2.0.0" will be fetched.
-If you specify a explicit commit reference with a version, e.g. "dev-master#commit-ref as [version]", then [version] will be used.
+The version number of the package specifies the CasperJS version!
+If you specify "dev-master" the current master version will be fetched.
+If you specify a explicit commit reference with a version, e.g. "dev-master#commit-ref as [version]", then [version] 
+will be used.
 
-The download source used is: https://bitbucket.org/ariya/phantomjs/downloads/
+The download source used is: https://github.com/n1k0/casperjs/zipball/*
 
-By setting the Composer configuration directive `bin-dir`, the [vendor binaries](https://getcomposer.org/doc/articles/vendor-binaries.md#can-vendor-binaries-be-installed-somewhere-other-than-vendor-bin-) will be installed into the defined folder.
-**Important! Composer will install the binaries into `vendor\bin` by default.**
+You can set the Composer configuration directive `bin-dir` to change the 
+[vendor binaries](https://getcomposer.org/doc/articles/vendor-binaries.md#can-vendor-binaries-be-installed-somewhere-other-than-vendor-bin-) 
+installation folder. **Important! Composer will install the binaries into `vendor\bin` by default.**
 
-The `scripts` section is necessary, because currently Composer does not pass events to the handler scripts of dependencies. If you leave it away, you might execute the installer manually.
+The `scripts` section is necessary, because currently Composer does not pass events to the handler scripts of 
+dependencies. If you leave it away, you might execute the installer manually.
 
-Now, assuming that the scripts section is set up as required, the PhantomJS binary
-will be installed into the `/bin` folder and updated alongside the project's Composer dependencies.
+Now, assuming that the scripts section is set up as required, CasperJS and PhantomJS binary
+will be installed into the bin folder and updated alongside the project's Composer dependencies.
 
 ## How does this work internally?
 
-1. **Fetching the PhantomJS Installer**
-In your composer.json you require the package "phantomjs-installer".
-The package is fetched by composer and stored into `./vendor/jakoch/phantomjs-installer`.
-It contains only one file the `PhantomInstaller\\Installer`.
+1. **Fetching the CasperJS Installer**
+In your composer.json you require the package "casperjs-installer".
+The package is fetched by composer and stored into `./vendor/jerome-breton/casperjs-installer`.
+It contains only one file the `CasperJsInstaller\\Installer`.
+
+2. **Fetching PhantomJS**
+This installer depends on [jakoch/phantomjs-installer](https://github.com/jakoch/phantomjs-installer) to install 
+PhantomJS and follows the same strategy. This project has been created with major part of Jakoch work. The 
+CasperJsInstaller will call Jakoch's `PhantomJSInstaller\\Installer`.
 
 2. **Platform-specific download of PhantomJS**
-The `PhantomInstaller\\Installer` is run as a "post-install-cmd". That's why you need the "scripts" section in your "composer.json".
-The installer creates a new composer in-memory package "phantomjs",
-detects your OS and downloads the correct Phantom version to the folder `./vendor/jakoch/phantomjs`.
-All PhantomJS files reside there, especially the `examples`.
+The `PhantomInstaller\\Installer` is run as a "post-install-cmd". That's why you need the "scripts" section in your 
+"composer.json". The installer creates a new composer in-memory package "casperjs" and downloads the correct Phantom 
+version to the folder `./vendor/jerome-breton/casperjs`. All CasperJS files reside there, especially the `samples`.
 
-3. **Installation into `/bin` folder**
-The binary is then copied from `./vendor/jakoch/phantomjs` to your composer configured `bin-dir` folder.
+3. **Installation into bin folder**
+A launcher is created to declare PhantomJS path and launch CasperJS from `./vendor/jerome-breton/casperjs` to your 
+composer configured `bin-dir` folder.
