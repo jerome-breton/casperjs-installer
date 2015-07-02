@@ -120,19 +120,19 @@ class Installer
             mkdir($binDir);
         }
         $os = self::getOS();
-        $sourceName = '/bin/casperjs';
+        $sourcePath = $targetDir.'/bin/casperjs';
         $phantomPath = $binDir . '/phantomjs';
-        $targetName = $binDir . '/casperjs';
+        $targetPath = $binDir . '/casperjs';
         if ($os === 'windows') {
             // the suffix for binaries on windows is ".exe"
-            $sourceName .= '.exe';
+            $sourcePath .= '.exe';
             $phantomPath .= '.exe';
-            $targetName .= '.bat';
-            file_put_contents($targetName, "SET PHANTOMJS_EXECUTABLE=$phantomPath\n$sourceName %*");
+            $targetPath .= '.bat';
+            file_put_contents($targetPath, "SET PHANTOMJS_EXECUTABLE=$phantomPath\n$sourcePath %*");
         }
         if ($os == 'linux' || $os == 'macosx') {
-            file_put_contents($targetName, "#!/bin/bash\nPHANTOMJS_EXECUTABLE=$phantomPath $sourceName $*");
-            chmod($targetName, 0755);
+            file_put_contents($targetPath, "#!/bin/bash\nPHANTOMJS_EXECUTABLE=$phantomPath $sourcePath $*");
+            chmod($targetPath, 0755);
         }
     }
 
