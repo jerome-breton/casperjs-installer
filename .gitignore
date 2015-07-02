@@ -1,1 +1,17 @@
-/vendor/
+# Netbeans
+/nbproject
+
+# Eclipse
+/.settings
+/.buildpath
+/.project
+
+# Composer
+/composer.phar
+/vendor
+
+# Vagrant
+.vagrant
+Vagrantfile
+
+.idea

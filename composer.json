@@ -1,6 +1,9 @@
 {
-    "name": "jerome-breton/casperjs-composer",
-    "version": "1.0.0-dev",
+    "name": "jerome-breton/casperjs-installer",
+    "description": "A Composer package which installs the CasperJS binary for your project.",
+    "type": "custom-installer",
+    "keywords": ["casperjs", "phantomjs", "headless", "binaries"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Jérôme Breton",
@@ -8,34 +11,25 @@
         }
     ],
     "require": {
+        "ext-openssl": "*",
         "jakoch/phantomjs-installer": "^1.9",
-        "n1k0/casperjs": "^1.0.3"
     },
-    "config": {
-        "bin-dir": "vendor/bin"
+    "autoload": {
+        "psr-0": {
+            "CasperJsInstaller\\": "src/"
+        }
     },
     "bin": [
-        "casperjs"
+      "bin/casperjs"
     ],
     "scripts": {
         "post-install-cmd": [
-            "PhantomInstaller\\Installer::installPhantomJS"
+            "PhantomInstaller\\Installer::installPhantomJS",
+            "CasperJsInstaller\\Installer::installCasperJS"
         ],
         "post-update-cmd": [
-            "PhantomInstaller\\Installer::installPhantomJS"
+            "PhantomInstaller\\Installer::installPhantomJS",
+            "CasperJsInstaller\\Installer::installCasperJS"
         ]
     },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "n1k0/casperjs",
-                "version": "1.0.3",
-                "dist": {
-                    "url": "https://github.com/n1k0/casperjs/zipball/1.0.3",
-                    "type": "zip"
-                }
-            }
-        }
-    ]
 }

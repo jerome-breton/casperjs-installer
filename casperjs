@@ -1,1 +1,0 @@
-PHANTOMJS_EXECUTABLE=./vendor/bin/phantomjs ./vendor/n1k0/casperjs/bin/casperjs
