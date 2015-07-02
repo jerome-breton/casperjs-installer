@@ -1,0 +1,40 @@
+{
+    "name": "jerome-breton/casperjs-composer",
+    "authors": [
+        {
+            "name": "Jérôme Breton",
+            "email": "jerome.breton@gmail.com"
+        }
+    ],
+    "require": {
+        "jakoch/phantomjs-installer": "^1.9",
+        "n1k0/casperjs": "^1.0.3"
+    },
+    "config": {
+        "bin-dir": "vendor/bin"
+    },
+    "bin": [
+		"casperjs"
+    ],
+    "scripts": {
+        "post-install-cmd": [
+            "PhantomInstaller\\Installer::installPhantomJS"
+        ],
+        "post-update-cmd": [
+            "PhantomInstaller\\Installer::installPhantomJS"
+        ]
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "n1k0/casperjs",
+                "version": "1.0.3",
+                "dist": {
+                    "url": "https://github.com/n1k0/casperjs/zipball/1.0.3",
+                    "type": "zip"
+                }
+            }
+        }
+    ]
+}
