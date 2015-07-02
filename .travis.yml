@@ -5,5 +5,5 @@ php:
   - hhvm
 install:
   - cd tests
-  - composer require jerome-breton/casperjs-installer=1.1-dev3
+  - composer require jerome-breton/casperjs-installer=1.1-beta3
   - composer install
