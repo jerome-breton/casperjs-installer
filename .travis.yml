@@ -6,4 +6,5 @@ php:
 install:
   - cd tests
   - composer require jerome-breton/casperjs-installer=1.1-beta3
-  - composer install
+  - composer update
+script: vendor/bin/casperjs selftest
