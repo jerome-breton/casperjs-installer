@@ -3,8 +3,12 @@ php:
   - 5.5
   - 5.4
   - hhvm
+os:
+  - linux
+  - osx
 install:
   - cd tests
-  - composer require jerome-breton/casperjs-installer=1.1-beta3
-  - composer update
-script: vendor/bin/casperjs selftest
+  - if [ -n "$TRAVIS_TAG" ]; then composer require jerome-breton/casperjs-installer=$TRAVIS_TAG ; fi
+  - rm -rf vendor composer.lock
+  - composer install
+script: vendor/bin/casperjs --version

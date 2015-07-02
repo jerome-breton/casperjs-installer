@@ -22,5 +22,8 @@
             "type": "vcs",
             "url": "https://github.com/jerome-breton/casperjs-installer"
         }
-    ]
+    ],
+    "require": {
+        "jerome-breton/casperjs-installer": "dev-master"
+    }
 }
