@@ -17,7 +17,7 @@ To install CasperJS and PhantomJS as a local, per-project dependency to your pro
 ```json
 {
     "require": {
-        "jerome-breton/casperjs-installer": "1.0.4"
+        "jerome-breton/casperjs-installer": "dev-master"
     },
     "scripts": {
         "post-install-cmd": [
@@ -32,12 +32,10 @@ To install CasperJS and PhantomJS as a local, per-project dependency to your pro
 
 For a development dependency, change `require` to `require-dev`.
 
-The version number of the package specifies the CasperJS version!
-If you specify "dev-master" the current master version will be fetched.
-If you specify a explicit commit reference with a version, e.g. "dev-master#commit-ref as [version]", then [version] 
-will be used.
+The version number of the package specifies the CasperJS version! But for now, no versions of PhantomJS are prebuilt
+for 1.0.* versions, so for now, only dev-master is working, and will fetch the last 1.9.* PhantomJS version.
 
-The download source used is: https://github.com/n1k0/casperjs/zipball/*
+The download source used is: https://github.com/n1k0/casperjs/zipball/master
 
 You can set the Composer configuration directive `bin-dir` to change the 
 [vendor binaries](https://getcomposer.org/doc/articles/vendor-binaries.md#can-vendor-binaries-be-installed-somewhere-other-than-vendor-bin-) 

@@ -4,7 +4,7 @@
     "type": "custom-installer",
     "keywords": ["casperjs", "phantomjs", "headless", "binaries"],
     "license": "MIT",
-    "version": "1.0.4",
+    "version": "dev-master",
     "authors": [
         {
             "name": "Jérôme Breton",
@@ -13,7 +13,7 @@
     ],
     "require": {
         "ext-openssl": "*",
-        "jakoch/phantomjs-installer": "1.8.*"
+        "jakoch/phantomjs-installer": "dev-master"
     },
     "autoload": {
         "psr-0": {
