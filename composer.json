@@ -31,5 +31,5 @@
             "PhantomInstaller\\Installer::installPhantomJS",
             "CasperJsInstaller\\Installer::installCasperJS"
         ]
-    },
+    }
 }
