@@ -18,18 +18,5 @@
         "psr-0": {
             "CasperJsInstaller\\": "src/"
         }
-    },
-    "bin": [
-      "bin/casperjs"
-    ],
-    "scripts": {
-        "post-install-cmd": [
-            "PhantomInstaller\\Installer::installPhantomJS",
-            "CasperJsInstaller\\Installer::installCasperJS"
-        ],
-        "post-update-cmd": [
-            "PhantomInstaller\\Installer::installPhantomJS",
-            "CasperJsInstaller\\Installer::installCasperJS"
-        ]
-    },
+    }
 }

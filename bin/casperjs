@@ -1,2 +1,0 @@
-#!/bin/bash
-PHANTOMJS_EXECUTABLE=../vendor/bin/phantomjs ../vendor/jerome-breton/casperjs/bin/casperjs

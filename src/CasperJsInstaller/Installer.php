@@ -1,9 +1,7 @@
 <?php
 
 /*
- * This file is part of the "jakoch/phantomjs-installer" package.
- *
- * Copyright (c) 2013-2014 Jens-André Koch <jakoch@web.de>
+ * This file is part of the "jerome-breton/casperjs-installer" package.
  *
  * The content is released under the MIT License. Please view
  * the LICENSE file that was distributed with this source code.
@@ -29,6 +27,8 @@ class Installer
      */
     public static function installCasperJS(Event $event)
     {
+        PhantomInstaller\Installer::installPhantomJS($event);
+
         $composer = $event->getComposer();
 
         $version = self::getVersion($composer);
@@ -48,7 +48,7 @@ class Installer
         $package = new Package(self::CASPERJS_NAME, $normVersion, $version);
         $package->setTargetDir($targetDir);
         $package->setInstallationSource('dist');
-        $package->setDistType(pathinfo($url, PATHINFO_EXTENSION) === 'zip' ? 'zip' : 'tar'); // set zip, tarball
+        $package->setDistType('zip');
         $package->setDistUrl($url);
 
         // Download the Archive
@@ -56,9 +56,8 @@ class Installer
         $downloadManager = $composer->getDownloadManager();
         $downloadManager->download($package, $targetDir, false);
 
-        // Copy only the PhantomJS binary from the installation "target dir" to the "bin" folder
-
-//        self::copyCasperJsBinaryToBinFolder($targetDir, $binDir);
+        // Create CasperJS launcher in the "bin" folder
+        self::createCasperJsBinaryToBinFolder($targetDir, $binDir);
     }
 
     /**
@@ -109,6 +108,32 @@ class Installer
             }
         }
         throw new \RuntimeException('Can not determine required version of ' . $packageName);
+    }
+
+    /**
+     * Create CasperJS launcher in the "bin" folder
+     * Takes different "folder structure" of the archives and different "binary file names" into account.
+     */
+    public static function createCasperJsBinaryToBinFolder($targetDir, $binDir)
+    {
+        if (!is_dir($binDir)) {
+            mkdir($binDir);
+        }
+        $os = self::getOS();
+        $sourceName = '/bin/casperjs';
+        $phantomPath = $binDir . '/phantomjs';
+        $targetName = $binDir . '/casperjs';
+        if ($os === 'windows') {
+            // the suffix for binaries on windows is ".exe"
+            $sourceName .= '.exe';
+            $phantomPath .= '.exe';
+            $targetName .= '.bat';
+            file_put_contents($targetName, "SET PHANTOMJS_EXECUTABLE=$phantomPath\n$sourceName %*");
+        }
+        if ($os == 'linux' || $os == 'macosx') {
+            file_put_contents($targetName, "#!/bin/bash\nPHANTOMJS_EXECUTABLE=$phantomPath $sourceName $*");
+            chmod($targetName, 0755);
+        }
     }
 
     /**
