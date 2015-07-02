@@ -1,5 +1,7 @@
-casperjs-installer [![Latest Stable Version](https://poser.pugx.org/jerome-breton/casperjs-installer/v/stable)](https://packagist.org/packages/jerome-breton/casperjs-installer) [![Total Downloads](https://poser.pugx.org/jerome-breton/casperjs-installer/downloads)](https://packagist.org/packages/jerome-breton/casperjs-installer) [![Latest Unstable Version](https://poser.pugx.org/jerome-breton/casperjs-installer/v/unstable)](https://packagist.org/packages/jerome-breton/casperjs-installer) [![License](https://poser.pugx.org/jerome-breton/casperjs-installer/license)](https://packagist.org/packages/jerome-breton/casperjs-installer)
-===================
+casperjs-installer 
+==================
+
+[![Latest Stable Version](https://poser.pugx.org/jerome-breton/casperjs-installer/v/stable)](https://packagist.org/packages/jerome-breton/casperjs-installer) [![Total Downloads](https://poser.pugx.org/jerome-breton/casperjs-installer/downloads)](https://packagist.org/packages/jerome-breton/casperjs-installer) [![Latest Unstable Version](https://poser.pugx.org/jerome-breton/casperjs-installer/v/unstable)](https://packagist.org/packages/jerome-breton/casperjs-installer) [![License](https://poser.pugx.org/jerome-breton/casperjs-installer/license)](https://packagist.org/packages/jerome-breton/casperjs-installer)
 
 A Composer package which installs the CasperJS and PhantomJS binary (Linux, Windows, Mac) into the bin path of your 
 project.
