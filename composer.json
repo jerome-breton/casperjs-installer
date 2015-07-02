@@ -15,7 +15,7 @@
         "bin-dir": "vendor/bin"
     },
     "bin": [
-		"casperjs"
+        "casperjs"
     ],
     "scripts": {
         "post-install-cmd": [
