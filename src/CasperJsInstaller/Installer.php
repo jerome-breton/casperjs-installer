@@ -27,7 +27,7 @@ class Installer
      */
     public static function installCasperJS(Event $event)
     {
-        PhantomInstaller\Installer::installPhantomJS($event);
+        \PhantomInstaller\Installer::installPhantomJS($event);
 
         $composer = $event->getComposer();
 
