@@ -17,7 +17,7 @@ To install CasperJS and PhantomJS as a local, per-project dependency to your pro
 ```json
 {
     "require": {
-        "jerome-breton/casperjs-installer": "1.0.3"
+        "jerome-breton/casperjs-installer": "1.0.4"
     },
     "scripts": {
         "post-install-cmd": [

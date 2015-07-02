@@ -13,7 +13,7 @@
     ],
     "require": {
         "ext-openssl": "*",
-        "jakoch/phantomjs-installer": "^1.8"
+        "jakoch/phantomjs-installer": "1.8.*"
     },
     "autoload": {
         "psr-0": {
