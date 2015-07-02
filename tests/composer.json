@@ -1,0 +1,26 @@
+{
+    "name": "jerome-breton/casperjs-installer-test",
+    "description": "This composer.json file is testing the installation of casperjs-installer as a dependency",
+    "type": "Test",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jérôme Breton",
+            "email": "jerome.breton@gmail.com"
+        }
+    ],
+    "scripts": {
+        "post-install-cmd": [
+            "CasperJsInstaller\\Installer::install"
+        ],
+        "post-update-cmd": [
+            "CasperJsInstaller\\Installer::install"
+        ]
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jerome-breton/casperjs-installer"
+        }
+    ]
+}
