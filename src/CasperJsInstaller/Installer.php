@@ -54,7 +54,7 @@ class Installer
         // Download the Archive
 
         $downloadManager = $composer->getDownloadManager();
-        $downloadManager->download($package, $targetDir, false);
+        $downloadManager->download($package, $targetDir, null);
 
         // Create CasperJS launcher in the "bin" folder
         self::createCasperJsBinaryToBinFolder($targetDir, $binDir);
