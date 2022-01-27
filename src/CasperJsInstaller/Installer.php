@@ -9,18 +9,69 @@
 
 namespace CasperJsInstaller;
 
-use Composer\Script\Event;
 use Composer\Composer;
-
+use Composer\IO\BaseIO as IO;
 use Composer\Package\Package;
 use Composer\Package\RootPackageInterface;
 use Composer\Package\Version\VersionParser;
+use Composer\Script\Event;
 
 class Installer
 {
     const CASPERJS_NAME = 'CasperJS';
 
     const CASPERJS_TARGETDIR = '/jerome-breton/casperjs';
+
+    const PACKAGE_NAME = 'jerome-breton/casperjs-installer';
+
+    /** @var Composer */
+    protected $composer;
+
+    /** @var IO */
+    protected $io;
+
+    /**
+     * @return Composer
+     */
+    public function getComposer()
+    {
+        return $this->composer;
+    }
+
+    /**
+     * @param Composer $composer
+     *
+     * @return self
+     */
+    public function setComposer(Composer $composer)
+    {
+        $this->composer = $composer;
+        return $this;
+    }
+
+    /**
+     * @return IO
+     */
+    public function getIO()
+    {
+        return $this->io;
+    }
+
+    /**
+     * @param IO $io
+     * @return self
+     */
+    public function setIO(IO $io)
+    {
+        $this->io = $io;
+        return $this;
+    }
+
+    public function __construct(Composer $composer, IO $io)
+    {
+        $this->setComposer($composer);
+        $this->setIO($io);
+    }
 
     /**
      * Operating system dependend installation of CasperJS
@@ -30,16 +81,46 @@ class Installer
         //Install PhantomJs before CasperJs
         \PhantomInstaller\Installer::installPhantomJS($event);
 
-        $composer = $event->getComposer();
+        $installer = new static($event->getComposer(), $event->getIO());
 
-        $version = self::getVersion($composer);
+        $config = $installer->getComposer()->getConfig();
 
-        $url = self::getURL($version);
+        $version = $installer->getVersion();
 
-        $binDir = $composer->getConfig()->get('bin-dir');
+        $binDir = $config->get('bin-dir');
 
         // the installation folder depends on the vendor-dir (default prefix is './vendor')
-        $targetDir = $composer->getConfig()->get('vendor-dir') . self::CASPERJS_TARGETDIR;
+        $targetDir = $config->get('vendor-dir') . self::CASPERJS_TARGETDIR;
+
+        $io = $installer->getIO();
+
+        // do not install a lower or equal version
+        $casperJsBinary = $installer->getCasperJsBinary($targetDir . '/bin/casperjs');
+        if ($casperJsBinary) {
+            $installedVersion = $installer->getCasperJsVersionFromBinary($casperJsBinary);
+            if (version_compare($version, $installedVersion) !== 1) {
+                $io->write('   - CasperJS v' . $installedVersion . ' is already installed. Skipping the installation.');
+                return;
+            }
+        }
+
+        // Download the Archive
+        if ($installer->download($targetDir, $version)) {
+            // Copy only the CasperJS binary from the installation "target dir" to the "bin" folder
+            $installer->createCasperJsBinaryToBinFolder($targetDir, $binDir);
+        }
+    }
+
+    /**
+     * Returns a Composer Package, which was created in memory.
+     *
+     * @param string $targetDir
+     * @param string $version
+     * @return Package
+     */
+    public function createComposerInMemoryPackage($targetDir, $version)
+    {
+        $url = $this->getURL($version);
 
         // Create Composer In-Memory Package
         $versionParser = new VersionParser();
@@ -51,13 +132,7 @@ class Installer
         $package->setDistType('zip');
         $package->setDistUrl($url);
 
-        // Download the Archive
-
-        $downloadManager = $composer->getDownloadManager();
-        $downloadManager->download($package, $targetDir, null);
-
-        // Create CasperJS launcher in the "bin" folder
-        self::createCasperJsBinaryToBinFolder($targetDir, $binDir);
+        return $package;
     }
 
     /**
@@ -67,22 +142,22 @@ class Installer
      * secondly, in the root package.
      * A version specification of "dev-master#<commit-reference>" is disallowed.
      *
-     * @param Composer $composer
      * @return string $version Version
      */
-    public static function getVersion($composer)
+    public function getVersion()
     {
-        $packages = $composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+        $version = null;
+        $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
 
         foreach($packages as $package) {
-            if($package->getName() === 'jerome-breton/casperjs-installer') {
+            if($package->getName() === self::PACKAGE_NAME) {
                 $version = $package->getPrettyVersion();
             }
         }
 
         // version was not found in the local repository, let's take a look at the root package
         if($version == null) {
-            $version = self::getRequiredVersion($composer->getPackage(), 'jerome-breton/casperjs-installer');
+            $version = $this->getRequiredVersion($this->composer->getPackage(), self::PACKAGE_NAME);
         }
 
         if($version == 'dev-master'){
@@ -100,7 +175,7 @@ class Installer
      * @throws \RuntimeException
      * @return mixed
      */
-    public static function getRequiredVersion(RootPackageInterface $package, $packageName = 'jerome-breton/casperjs-installer')
+    public function getRequiredVersion(RootPackageInterface $package, $packageName)
     {
         foreach (array($package->getRequires(), $package->getDevRequires()) as $requiredPackages) {
             if (isset($requiredPackages[$packageName])) {
@@ -114,12 +189,12 @@ class Installer
      * Create CasperJS launcher in the "bin" folder
      * Takes different "folder structure" of the archives and different "binary file names" into account.
      */
-    public static function createCasperJsBinaryToBinFolder($targetDir, $binDir)
+    public function createCasperJsBinaryToBinFolder($targetDir, $binDir)
     {
         if (!is_dir($binDir)) {
             mkdir($binDir);
         }
-        $os = self::getOS();
+        $os = $this->getOS();
         $sourcePath = $targetDir.'/bin/casperjs';
         $phantomPath = $binDir . '/phantomjs';
         $targetPath = $binDir . '/casperjs';
@@ -142,7 +217,7 @@ class Installer
      * @param string $version
      * @return string Download URL
      */
-    public static function getURL($version)
+    public function getURL($version)
     {
         return 'https://github.com/n1k0/casperjs/zipball/'.$version;
     }
@@ -152,7 +227,7 @@ class Installer
      *
      * @return string OS, e.g. macosx, windows, linux.
      */
-    public static function getOS()
+    public function getOS()
     {
         $uname = strtolower(php_uname());
 
@@ -164,6 +239,132 @@ class Installer
             return 'linux';
         } else {
             return 'unknown';
+        }
+    }
+
+    /**
+     * Get path to CasperJS binary.
+     *
+     * @param string $binDir
+     * @return string|bool Returns false, if file not found, else filepath.
+     */
+    public function getCasperJsBinary($binDir)
+    {
+        $os = $this->getOS();
+
+        $binary = $binDir . '/casperjs';
+
+        if ($os === 'windows') {
+            // the suffix for binaries on windows is ".exe"
+            $binary .= '.exe';
+        }
+
+        return realpath($binary);
+    }
+
+    /**
+     * Get CasperJS application version. Equals running "casperjs --version" on the CLI.
+     *
+     * @param string $pathToBinary
+     * @return string CasperJS Version
+     */
+    public function getCasperJsVersionFromBinary($pathToBinary)
+    {
+        $io = $this->getIO();
+
+        try {
+            $cmd = escapeshellarg($pathToBinary) . ' --version';
+            exec($cmd, $stdout);
+            $version = $stdout[0];
+            return $version;
+        } catch (\Exception $e) {
+            $io->warning("Caught exception while checking CasperJS version:\n" . $e->getMessage());
+            $io->notice('Re-downloading CasperJS');
+            return false;
+        }
+    }
+
+    /**
+     * The main download function.
+     *
+     * The package to download is created on the fly.
+     * For downloading Composer\DownloadManager is used.
+     *
+     * @param string $targetDir
+     * @param string $version
+     * @return boolean
+     */
+    public function download($targetDir, $version)
+    {
+        if (defined('Composer\Composer::RUNTIME_API_VERSION') && version_compare(Composer::RUNTIME_API_VERSION, '2.0', '>=')) {
+            // Composer v2 behavior
+            return $this->downloadUsingComposerVersion2($targetDir, $version);
+        } else {
+            // Composer v1 behavior
+            return $this->downloadUsingComposerVersion1($targetDir, $version);
+        }
+    }
+
+    /**
+     * @param string $targetDir
+     * @param string $version
+     *
+     * @return bool
+     */
+    public function downloadUsingComposerVersion1($targetDir, $version)
+    {
+        $io = $this->getIO();
+        $downloadManager = $this->getComposer()->getDownloadManager();
+
+        $package = $this->createComposerInMemoryPackage($targetDir, $version);
+
+        try {
+            $downloadManager->download($package, $targetDir, null);
+            return true;
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $io->error(PHP_EOL . '<error>While downloading version ' . $version . ' the following error occurred: ' . $message . '</error>');
+            return false;
+        }
+    }
+
+    /**
+     * @param string $targetDir
+     * @param string $version
+     *
+     * @return bool
+     */
+    public function downloadUsingComposerVersion2($targetDir, $version)
+    {
+        $io = $this->getIO();
+        $composer = $this->getComposer();
+        $downloadManager = $composer->getDownloadManager();
+
+        $package = $this->createComposerInMemoryPackage($targetDir, $version);
+
+        try {
+            $loop = $composer->getLoop();
+            $promise = $downloadManager->download($package, $targetDir);
+            if ($promise) {
+                $loop->wait(array($promise));
+            }
+            $promise = $downloadManager->prepare('install', $package, $targetDir);
+            if ($promise) {
+                $loop->wait(array($promise));
+            }
+            $promise = $downloadManager->install($package, $targetDir);
+            if ($promise) {
+                $loop->wait(array($promise));
+            }
+            $promise = $downloadManager->cleanup('install', $package, $targetDir);
+            if ($promise) {
+                $loop->wait(array($promise));
+            }
+            return true;
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $io->error(PHP_EOL . '<error>While downloading version ' . $version . ' the following error occurred: ' . $message . '</error>');
+            return false;
         }
     }
 }
